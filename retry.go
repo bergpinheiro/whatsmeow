@@ -191,6 +191,19 @@ type incomingRetryKey struct {
 	messageID types.MessageID
 }
 
+func (cli *Client) tryHandleRetryReceipt(ctx context.Context, receipt *events.Receipt, node *waBinary.Node) {
+	defer func() {
+		err := recover()
+		if err != nil {
+			cli.Log.Errorf("Retry receipt handler panicked: %v\n%s", err, debug.Stack())
+		}
+	}()
+	err := cli.handleRetryReceipt(ctx, receipt, node)
+	if err != nil {
+		cli.Log.Errorf("Failed to handle retry receipt for %s/%s from %s: %v", receipt.Chat, receipt.MessageIDs[0], receipt.Sender, err)
+	}
+}
+
 // handleRetryReceipt handles an incoming retry receipt for an outgoing message.
 func (cli *Client) handleRetryReceipt(ctx context.Context, receipt *events.Receipt, node *waBinary.Node) error {
 	defer func() {
