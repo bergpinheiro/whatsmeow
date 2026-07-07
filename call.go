@@ -109,18 +109,15 @@ func (cli *Client) RejectCall(ctx context.Context, callFrom types.JID, callID st
 		return ErrNotLoggedIn
 	}
 	ownID, callFrom = ownID.ToNonAD(), callFrom.ToNonAD()
+	// Do NOT attach a tctoken (privacy token) to call rejects. When a stored
+	// privacy token exists for the caller (e.g. restored by history sync) and is
+	// attached here, the server silently drops the whole <call><reject> stanza
+	// and the caller's phone keeps ringing. Verified live 2026-07-07 against
+	// LID-addressed callers: identical stanza without the token is accepted.
 	rejectNode := waBinary.Node{
 		Tag:     "reject",
 		Attrs:   waBinary.Attrs{"call-id": callID, "call-creator": callFrom, "count": "0"},
 		Content: nil,
-	}
-	if token, err := cli.ensureTCToken(ctx, callFrom); err != nil {
-		cli.Log.Warnf("Failed to get privacy token for call reject to %s: %v", callFrom, err)
-	} else if len(token) > 0 {
-		rejectNode.Content = []waBinary.Node{{
-			Tag:     "tctoken",
-			Content: token,
-		}}
 	}
 	return cli.sendNode(ctx, waBinary.Node{
 		Tag:     "call",
