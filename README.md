@@ -3,6 +3,15 @@
 
 whatsmeow is a Go library for the WhatsApp web multidevice API.
 
+> **About this fork** — whatsmeow is created and maintained by
+> [Tulir Asokan](https://github.com/tulir) ([upstream](https://github.com/tulir/whatsmeow), MPL-2.0).
+> This fork carries a few patches ahead of / diverging from upstream, used by the
+> [bergpinheiro/gows](https://github.com/bergpinheiro/gows) engine builds:
+> passkey (WebAuthn) pairing (upstream PR#1186), the 463-LID history-sync privacy-token fix,
+> and `call: don't attach tctoken to call rejects` (a stored caller privacy token attached to
+> `<call><reject>` makes the server silently drop the stanza). All credit for the library
+> belongs to upstream.
+
 ## Discussion
 Matrix room: [#whatsmeow:maunium.net](https://matrix.to/#/#whatsmeow:maunium.net)
 
