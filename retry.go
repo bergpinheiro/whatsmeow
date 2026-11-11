@@ -402,8 +402,12 @@ func (cli *Client) handleRetryReceipt(ctx context.Context, receipt *events.Recei
 	}
 	var content []waBinary.Node
 	if msg.wa != nil {
+		var extraParams nodeExtraParams
+		if cli.RetryAdditionalNodes != nil {
+			extraParams.additionalNodes = cli.RetryAdditionalNodes(msg.wa)
+		}
 		content = cli.getMessageContent(
-			*encrypted, msg.wa, attrs, includeDeviceIdentity, nodeExtraParams{},
+			*encrypted, msg.wa, attrs, includeDeviceIdentity, extraParams,
 		)
 	} else {
 		content = []waBinary.Node{
